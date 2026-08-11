@@ -3,9 +3,10 @@ set -e
 
 echo "=== Starting Laravel Initialization ==="
 
-# Force SQLite database location for container environment
+# Force container runtime variables
 export DB_CONNECTION=sqlite
 export DB_DATABASE=/app/database/database.sqlite
+export ASSET_URL=/
 
 # Ensure database directory and file exist with full read/write permissions
 mkdir -p /app/database
