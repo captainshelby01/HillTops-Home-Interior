@@ -2,7 +2,7 @@
 FROM php:8.3-cli-alpine
 
 # Install system dependencies, Node.js, npm, and PHP extensions
-RUN apk add --no-linux-headers --no-cache \
+RUN apk add --no-cache \
     git \
     curl \
     libpng-dev \
@@ -12,7 +12,8 @@ RUN apk add --no-linux-headers --no-cache \
     unzip \
     nodejs \
     npm \
-    sqlite-dev
+    sqlite-dev \
+    linux-headers
 
 RUN docker-php-ext-install pdo pdo_sqlite pdo_mysql mbstring bcmath gd
 
