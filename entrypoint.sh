@@ -1,20 +1,31 @@
 #!/bin/sh
 set -e
 
-# Ensure database file exists with permissions
+echo "=== Starting Laravel Initialization ==="
+
+# Force SQLite database location for container environment
+export DB_CONNECTION=sqlite
+export DB_DATABASE=/app/database/database.sqlite
+
+# Ensure database directory and file exist with full read/write permissions
 mkdir -p /app/database
 touch /app/database/database.sqlite
 chmod -R 777 /app/database /app/storage /app/bootstrap/cache
 
-# Clear any build-time config cache so runtime ENV vars (APP_KEY, etc) are read live
+# Clear build-time caches
 php artisan config:clear || true
-php artisan cache:clear || true
+php artisan route:clear || true
 php artisan view:clear || true
 
-# Run database migrations and seeders if tables are missing
-php artisan migrate --force || true
-php artisan db:seed --class=PortfolioSeeder --force || true
+# Run migrations & seed database
+echo "=== Running Database Migrations & Portfolio Seeder ==="
+php artisan migrate --force
+php artisan db:seed --class=PortfolioSeeder --force
 
-# Start server
-echo "Starting server on port ${PORT:-8080}..."
+# Cache routes & views for fast production performance
+php artisan route:cache
+php artisan view:cache
+
+# Start application server
+echo "=== Starting Application on Port ${PORT:-8080} ==="
 exec php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
