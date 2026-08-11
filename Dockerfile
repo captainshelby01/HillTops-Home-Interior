@@ -30,18 +30,12 @@ COPY . .
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 RUN npm install && npm run build
 
-# Create SQLite database and run migrations/seed
-RUN touch database/database.sqlite && php artisan migrate:fresh --force --seed
+# Make entrypoint script executable
+RUN chmod +x /app/entrypoint.sh
 
-# Cache Laravel configuration
-RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
-
-# Set permissions
-RUN chmod -R 777 storage bootstrap/cache database
-
-# Expose port (Render passes PORT environment variable)
+# Expose port
 ENV PORT=8080
 EXPOSE 8080
 
-# Start command
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+# Run runtime entrypoint script
+ENTRYPOINT ["/app/entrypoint.sh"]
